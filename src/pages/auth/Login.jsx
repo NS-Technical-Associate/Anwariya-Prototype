@@ -1,20 +1,43 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { api } from "../../services/api";
 
-export default function Login() {
+export default function Login({ setTokens }) {
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState("influencer");
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    // Assume user already registered
-    const role = localStorage.getItem("role");
+    try {
+      // 🔹 Prototype login = create or reuse user
+      const res = await api("/users", {
+        method: "POST",
+        body: JSON.stringify({ email, role }),
+      });
 
-    if (!role) {
-      alert("Please register first");
-      return;
+      // 🔹 Save session
+      const userId = res.id;
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("role", res.role);
+
+      // 🔹 Fetch tokens from backend
+      const tokenRes = await api(`/tokens/${userId}`);
+      setTokens(tokenRes.tokens);
+
+      // 🔹 Redirect based on role
+      navigate(
+        res.role === "vendor" ? "/vendor" : "/influencer"
+      );
+    } catch (err) {
+      alert("Login failed. Try again.");
+    } finally {
+      setLoading(false);
     }
-
-    navigate("/redirect");
   };
 
   return (
@@ -29,18 +52,26 @@ export default function Login() {
           type="email"
           placeholder="Email"
           className="w-full border p-3 rounded"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
 
-        <input
-          type="password"
-          placeholder="Password"
+        {/* Prototype role selection */}
+        <select
           className="w-full border p-3 rounded"
-          required
-        />
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+        >
+          <option value="influencer">Influencer</option>
+          <option value="vendor">Vendor</option>
+        </select>
 
-        <button className="w-full bg-blue-600 text-white py-3 rounded">
-          Login
+        <button
+          disabled={loading}
+          className="w-full bg-blue-600 text-white py-3 rounded disabled:opacity-60"
+        >
+          {loading ? "Logging in..." : "Login"}
         </button>
 
         <p className="text-sm text-center">

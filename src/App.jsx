@@ -79,8 +79,8 @@ function App() {
         <Route path="/" element={<Navigate to="/login" replace />} />
 
         {/* -------- AUTH -------- */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login setTokens={setTokens} />} />
+        <Route path="/register" element={<Register setTokens={setTokens} />} />
 
         {/* -------- ROLE REDIRECT -------- */}
         <Route path="/redirect" element={<RoleRedirect />} />
@@ -88,28 +88,39 @@ function App() {
         {/* -------- INFLUENCER -------- */}
         <Route
           path="/influencer"
-          element={<InfluencerDashboard tokens={tokens} />}
+          element={<InfluencerDashboard />}
         />
+
         <Route
           path="/influencer/campaign/:id"
-          element={<CampaignDetails tokens={tokens} setTokens={setTokens} />}
+          element={
+            <CampaignDetails
+              tokens={tokens}
+              setTokens={setTokens}
+            />
+          }
         />
+
         <Route
           path="/influencer/chat/:id"
           element={<Chat tokens={tokens} setTokens={setTokens} />}
         />
+
         <Route
           path="/influencer/chats"
           element={<MyChats tokens={tokens} />}
         />
+
         <Route
           path="/influencer/profile"
           element={<InfluencerProfile />}
         />
+
         <Route
           path="/influencer/no-tokens"
           element={<NotEnoughTokens />}
         />
+
 
         {/* -------- VENDOR -------- */}
         <Route path="/vendor/home" element={<Home />} />

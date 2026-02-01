@@ -1,63 +1,52 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageWrapper from "../../components/common/PageWrapper";
+import { api } from "../../services/api";
 
 export default function VendorMyChats() {
   const navigate = useNavigate();
+  const [chats, setChats] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // dummy chats
-  const chats = [
-    {
-      id: 1,
-      influencer: "Ananya Sharma",
-      product: "Skincare Serum",
-      status: "Active",
-    },
-    {
-      id: 2,
-      influencer: "Rahul Verma",
-      product: "Fitness Band",
-      status: "Closed",
-    },
-  ];
+  const vendorId = Number(localStorage.getItem("userId"));
+
+  useEffect(() => {
+    api(`/chats/user/${vendorId}`)
+      .then(setChats)
+      .finally(() => setLoading(false));
+  }, [vendorId]);
 
   return (
-    <PageWrapper
-      title="My Chats"
-      subtitle="Influencers who contacted you"
-    >
-      {chats.length === 0 ? (
+    <PageWrapper title="My Chats">
+      {loading ? (
+        <div className="text-center text-gray-500">
+          Loading chats...
+        </div>
+      ) : chats.length === 0 ? (
         <div className="bg-white p-10 rounded-xl shadow text-center">
-          <p className="text-gray-500">
-            No conversations yet.
+          <h2 className="text-lg font-semibold">
+            No chats yet
+          </h2>
+          <p className="text-gray-500 mt-2">
+            Influencers will appear here once they contact you.
           </p>
         </div>
       ) : (
-        <div className="space-y-4 max-w-3xl">
+        <div className="space-y-4">
           {chats.map((chat) => (
             <div
               key={chat.id}
-              className="bg-white p-5 rounded-xl shadow flex justify-between items-center"
+              onClick={() =>
+                navigate(`/vendor/chat/${chat.id}`)
+              }
+              className="bg-white p-4 rounded-xl shadow cursor-pointer hover:bg-gray-50"
             >
-              <div>
-                <h3 className="font-semibold">
-                  {chat.influencer}
-                </h3>
-                <p className="text-sm text-gray-500">
-                  Product: {chat.product}
-                </p>
-                <span className="text-xs">
-                  Status: {chat.status}
-                </span>
-              </div>
-
-              <button
-                onClick={() =>
-                  navigate(`/vendor/chat/${chat.id}`)
-                }
-                className="text-purple-600 text-sm"
-              >
-                Open Chat →
-              </button>
+              <p className="font-medium">
+                Campaign ID: {chat.campaign_id}
+              </p>
+              <p className="text-sm text-gray-500">
+                Click to open chat
+              </p>
             </div>
           ))}
         </div>

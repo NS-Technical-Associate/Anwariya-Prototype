@@ -1,17 +1,46 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { api } from "../../services/api";
 
-export default function Register() {
+export default function Register({ setTokens }) {
   const navigate = useNavigate();
+
+  const [email, setEmail] = useState("");
   const [role, setRole] = useState("influencer");
+  const [loading, setLoading] = useState(false);
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    // Save role only (prototype)
-    localStorage.setItem("role", role);
+    try {
+      // 🔹 Create user (prototype register)
+      const res = await api("/users", {
+        method: "POST",
+        body: JSON.stringify({
+          email,
+          role,
+        }),
+      });
 
-    navigate("/redirect");
+      // 🔹 Save session
+      const userId = res.id;
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("role", res.role);
+
+      // 🔹 Fetch tokens from backend
+      const tokenRes = await api(`/tokens/${userId}`);
+      setTokens(tokenRes.tokens);
+
+      // 🔹 Redirect based on role
+      navigate(
+        res.role === "vendor" ? "/vendor" : "/influencer"
+      );
+    } catch (err) {
+      alert("Registration failed. Try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -23,19 +52,15 @@ export default function Register() {
         <h1 className="text-2xl font-bold text-center">Sign Up</h1>
 
         <input
-          type="text"
-          placeholder="Name"
-          className="w-full border p-3 rounded"
-          required
-        />
-
-        <input
           type="email"
           placeholder="Email"
           className="w-full border p-3 rounded"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
 
+        {/* Role selection */}
         <select
           value={role}
           onChange={(e) => setRole(e.target.value)}
@@ -45,8 +70,11 @@ export default function Register() {
           <option value="vendor">Vendor</option>
         </select>
 
-        <button className="w-full bg-blue-600 text-white py-3 rounded">
-          Create Account
+        <button
+          disabled={loading}
+          className="w-full bg-blue-600 text-white py-3 rounded disabled:opacity-60"
+        >
+          {loading ? "Creating account..." : "Create Account"}
         </button>
 
         <p className="text-sm text-center">
