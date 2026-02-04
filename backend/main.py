@@ -19,21 +19,37 @@ from schemas import BillCreate
 # --------------------
 # DB + APP SETUP
 # --------------------
+from fastapi import Request
+from fastapi.responses import Response
+
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+@app.options("/{path:path}")
+def options_handler(path: str, request: Request):
+    return Response(status_code=200)
+
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173"
+        "http://localhost:5174",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# --------------------
+# DATABASE DEPENDENCY
+# --------------------
 
 def get_db():
     db = SessionLocal()

@@ -1,16 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import PageWrapper from "../../components/common/PageWrapper";
 import { api } from "../../services/api";
 
 export default function Chat({ tokens, setTokens }) {
-  const { id } = useParams(); // chatId
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
 
+  const bottomRef = useRef(null);
   const userId = Number(localStorage.getItem("userId"));
 
   const FREE_LIMIT = 5;
@@ -19,41 +20,58 @@ export default function Chat({ tokens, setTokens }) {
 
   const msgKey = `chat_msgs_${userId}_${id}`;
   const paidKey = `chat_paid_blocks_${userId}_${id}`;
+  const autoMsgKey = `auto_interest_sent_${userId}_${id}`;
 
+  /* LOAD MESSAGES + AUTO MESSAGE (ONLY ONCE) */
   useEffect(() => {
-    api(`/messages/${id}`).then((data) => {
+    const loadMessages = async () => {
+      const data = await api(`/messages/${id}`);
+
+      if (data.length === 0 && !localStorage.getItem(autoMsgKey)) {
+        await api("/messages", {
+          method: "POST",
+          body: JSON.stringify({
+            chat_id: Number(id),
+            sender_id: userId,
+            text: "Hi, I’m interested in this campaign.",
+          }),
+        });
+
+        localStorage.setItem(autoMsgKey, "true");
+
+        const updated = await api(`/messages/${id}`);
+        setMessages(updated);
+        localStorage.setItem(msgKey, 1);
+        return;
+      }
+
       setMessages(data);
 
-      // sync influencer message count
       const influencerCount = data.filter(
         (m) => m.sender_id === userId
       ).length;
 
       localStorage.setItem(msgKey, influencerCount);
-    });
+    };
+
+    loadMessages();
   }, [id, userId]);
 
-  const sentCount =
-    Number(localStorage.getItem(msgKey)) || 0;
+  /* AUTO SCROLL */
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-  const paidBlocks =
-    Number(localStorage.getItem(paidKey)) || 0;
+  const sentCount = Number(localStorage.getItem(msgKey)) || 0;
+  const paidBlocks = Number(localStorage.getItem(paidKey)) || 0;
 
-  const chargeableMsgs = Math.max(
-    0,
-    sentCount - FREE_LIMIT
-  );
-
-  const requiredBlocks = Math.floor(
-    chargeableMsgs / PAID_BLOCK_SIZE
-  );
+  const chargeableMsgs = Math.max(0, sentCount - FREE_LIMIT);
+  const requiredBlocks = Math.floor(chargeableMsgs / PAID_BLOCK_SIZE);
 
   const handleSend = async () => {
     if (!input.trim() || sending) return;
-
     setSending(true);
 
-    // 🔒 Deduct tokens ONLY when entering a new block
     if (requiredBlocks > paidBlocks) {
       const tokenRes = await api(
         `/tokens/deduct?user_id=${userId}&amount=${BLOCK_COST}`,
@@ -65,10 +83,7 @@ export default function Chat({ tokens, setTokens }) {
         return;
       }
 
-      localStorage.setItem(
-        paidKey,
-        paidBlocks + 1
-      );
+      localStorage.setItem(paidKey, paidBlocks + 1);
       setTokens(tokenRes.tokens);
     }
 
@@ -90,53 +105,91 @@ export default function Chat({ tokens, setTokens }) {
   };
 
   return (
-    <PageWrapper title="Chat">
-      <div className="bg-white rounded-xl shadow h-[70vh] flex flex-col">
+    <PageWrapper>
+      <div className="h-[calc(100vh-64px)] bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 flex flex-col">
 
         {/* HEADER */}
-        <div className="border-b p-4 flex justify-between items-center">
+        <div className="flex justify-between items-center px-6 py-4 border-b border-blue-400/20 bg-slate-900/70 backdrop-blur">
           <div>
-            <p className="font-medium">Conversation</p>
-            <p className="text-xs text-gray-500">
+            <h2 className="text-lg font-semibold text-blue-400">
+              Conversation
+            </h2>
+            <p className="text-xs text-slate-400">
               {sentCount < FREE_LIMIT
                 ? `${FREE_LIMIT - sentCount} free messages left`
                 : `5 tokens per ${PAID_BLOCK_SIZE} messages`}
             </p>
           </div>
 
-          <div className="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full border">
+          {/* LIGHTER BLUE TOKENS BADGE */}
+          <div className="
+            bg-blue-500/80
+            text-white
+            px-4 py-1.5
+            rounded-full
+            font-semibold
+            border border-blue-300
+            shadow-[0_0_18px_rgba(96,165,250,0.6)]
+          ">
             {tokens} Tokens
           </div>
         </div>
 
         {/* MESSAGES */}
-        <div className="flex-1 p-4 space-y-3 overflow-y-auto">
+        <div className="flex-1 px-6 py-4 overflow-y-auto space-y-4">
           {messages.map((m) => (
             <div
               key={m.id}
-              className={`px-4 py-2 rounded-xl max-w-xs text-sm ${
-                m.sender_id === userId
-                  ? "bg-blue-600 text-white ml-auto"
-                  : "bg-gray-100 text-gray-800"
-              }`}
+              className={`max-w-sm px-4 py-2 rounded-2xl text-sm transition-all
+                ${
+                  m.sender_id === userId
+                    ? "ml-auto bg-blue-500 text-white shadow-[0_0_20px_rgba(96,165,250,0.5)]"
+                    : "mr-auto bg-slate-800 text-slate-200 border border-slate-700"
+                }
+              `}
             >
               {m.text}
             </div>
           ))}
+          <div ref={bottomRef} />
         </div>
 
         {/* INPUT */}
-        <div className="border-t p-4 flex gap-2">
+        <div className="px-6 py-4 border-t border-blue-400/20 bg-slate-900/80 backdrop-blur flex gap-3">
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="border p-3 flex-1 rounded"
-            placeholder="Type a message..."
+            placeholder="Type your message..."
+            className="
+              flex-1
+              bg-slate-900
+              border border-blue-500/40
+              rounded-xl
+              px-4 py-2
+              text-slate-200
+
+              shadow-[0_0_18px_rgba(96,165,250,0.35)]
+              transition-all duration-300
+
+              focus:outline-none
+              focus:ring-2 focus:ring-blue-400/70
+              hover:shadow-[0_0_26px_rgba(96,165,250,0.6)]
+            "
           />
+
           <button
             onClick={handleSend}
             disabled={sending}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-5 rounded disabled:opacity-60"
+            className="
+              bg-blue-500 hover:bg-blue-600
+              text-white
+              px-6
+              rounded-xl
+              transition
+              active:scale-95
+              disabled:opacity-60
+              shadow-[0_0_20px_rgba(96,165,250,0.6)]
+            "
           >
             Send
           </button>

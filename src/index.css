@@ -1,1 +1,5 @@
+html, body, #root {
+  background-color: #0f172a; /* slate-900 */
+}
+
 @import "tailwindcss";
