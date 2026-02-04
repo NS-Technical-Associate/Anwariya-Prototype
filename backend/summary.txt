@@ -1,0 +1,99 @@
+# Project Summary
+
+This project is the backend for the Anwariya-Prototype, a platform designed to connect vendors and influencers for marketing campaigns. It provides a RESTful API for managing users (vendors and influencers), campaigns, chats, products, and bills. The backend also includes an analytics endpoint to provide insights into sales performance.
+
+## Technologies Used
+
+- **FastAPI**: A modern, fast (high-performance) web framework for building APIs with Python.
+- **SQLAlchemy**: A SQL toolkit and Object-Relational Mapper (ORM) for Python.
+- **Pydantic**: A library for data validation and settings management using Python type annotations.
+- **Uvicorn**: An ASGI server for running FastAPI applications.
+- **Google Generative AI**: Used for analytics and insights.
+- **python-dotenv**: For managing environment variables.
+
+## File Breakdown
+
+### `main.py`
+
+This file is the entry point of the FastAPI application. It defines all the API endpoints and handles incoming requests.
+
+**Functions/Endpoints:**
+
+- `get_db()`: A dependency that provides a database session to the endpoints.
+- `register_user(user: schemas.UserCreate)`: `POST /users` - Creates or retrieves a user.
+- `create_campaign(campaign: schemas.CampaignCreate)`: `POST /campaigns` - Creates a new campaign.
+- `get_campaigns()`: `GET /campaigns` - Retrieves all campaigns.
+- `create_or_get_chat(chat: schemas.ChatCreate)`: `POST /chats` - Creates or retrieves a chat between a vendor and an influencer for a campaign.
+- `get_user_chats(user_id: int)`: `GET /chats/user/{user_id}` - Retrieves all chats for a given user.
+- `send_message(message: schemas.MessageCreate)`: `POST /messages` - Sends a message in a chat.
+- `get_messages(chat_id: int)`: `GET /messages/{chat_id}` - Retrieves all messages for a given chat.
+- `get_tokens(user_id: int)`: `GET /tokens/{user_id}` - Retrieves the token balance for a user.
+- `deduct_user_tokens(user_id: int, amount: int)`: `POST /tokens/deduct` - Deducts tokens from a user's account.
+- `get_profile(user_id: int)`: `GET /profile/{user_id}` - Retrieves the profile of an influencer.
+- `save_profile(profile: schemas.ProfileCreate)`: `POST /profile` - Creates or updates an influencer's profile.
+- `add_product(product: schemas.ProductCreate)`: `POST /products` - Adds a new product for a vendor.
+- `get_products(vendor_id: int)`: `GET /products` - Retrieves all products for a given vendor.
+- `create_bill(bill: BillCreate)`: `POST /bills` - Creates a new bill for a product sale.
+- `analytics(vendor_id: int)`: `GET /analytics/{vendor_id}` - Provides sales analytics and insights for a vendor.
+
+### `crud.py`
+
+This file contains all the functions that interact with the database (Create, Read, Update, Delete operations).
+
+**Functions:**
+
+- `create_or_get_user(db: Session, email: str, role: str)`: Creates a new user or returns an existing one.
+- `get_user_by_id(db: Session, user_id: int)`: Retrieves a user by their ID.
+- `create_campaign(db: Session, vendor_id: int, product_name: str, description: str)`: Creates a new campaign.
+- `get_all_campaigns(db: Session)`: Retrieves all campaigns.
+- `create_or_get_chat(db: Session, campaign_id: int, vendor_id: int, influencer_id: int)`: Creates or retrieves a chat.
+- `get_chats_by_user(db: Session, user_id: int)`: Retrieves all chats for a user.
+- `create_message(db: Session, chat_id: int, sender_id: int, text: str)`: Creates a new message.
+- `get_messages_by_chat(db: Session, chat_id: int)`: Retrieves all messages for a chat.
+- `get_user_tokens(db: Session, user_id: int)`: Retrieves a user's token balance.
+- `deduct_tokens(db: Session, user_id: int, amount: int)`: Deducts tokens from a user.
+- `get_profile(db: Session, user_id: int)`: Retrieves an influencer's profile.
+- `create_or_update_profile(db: Session, data)`: Creates or updates an influencer's profile.
+- `create_product(db: Session, data)`: Creates a new product.
+- `get_products(db: Session, vendor_id: int)`: Retrieves all products for a vendor.
+- `create_bill(db: Session, bill)`: Creates a new bill.
+
+### `models.py`
+
+This file defines the SQLAlchemy ORM models, which represent the database tables as Python classes.
+
+**Classes/Tables:**
+
+- `User`: Represents the `users` table.
+- `Campaign`: Represents the `campaigns` table.
+- `Chat`: Represents the `chats` table.
+- `Message`: Represents the `messages` table.
+- `InfluencerProfile`: Represents the `influencer_profiles` table.
+- `Product`: Represents the `products` table.
+- `Bill`: Represents the `bills` table.
+
+### `schemas.py`
+
+This file contains the Pydantic models (schemas) used for data validation and serialization in the API.
+
+**Classes:**
+
+- `UserCreate`: Schema for creating a user.
+- `CampaignCreate`: Schema for creating a campaign.
+- `ChatCreate`: Schema for creating a chat.
+- `MessageCreate`: Schema for creating a message.
+- `MessageOut`: Schema for returning a message.
+- `ProfileCreate`: Schema for creating or updating a profile.
+- `ProfileOut`: Schema for returning a profile.
+- `ProductCreate`: Schema for creating a product.
+- `ProductOut`: Schema for returning a product.
+- `BillCreate`: Schema for creating a bill.
+- `BillOut`: Schema for returning bill information.
+
+### `db.py`
+
+This file sets up the database connection using SQLAlchemy. It creates the database engine and a `SessionLocal` class for creating database sessions.
+
+### `requirements.txt`
+
+This file lists all the Python packages that the project depends on.
