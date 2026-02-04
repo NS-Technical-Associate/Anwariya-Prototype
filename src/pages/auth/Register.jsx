@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { api } from "../../services/api";
 
 export default function Register({ setTokens }) {
@@ -14,57 +14,48 @@ export default function Register({ setTokens }) {
     setLoading(true);
 
     try {
-      // 🔹 Create user (prototype register)
       const res = await api("/users", {
         method: "POST",
-        body: JSON.stringify({
-          email,
-          role,
-        }),
+        body: JSON.stringify({ email, role }),
       });
 
-      // 🔹 Save session
-      const userId = res.id;
-      localStorage.setItem("userId", userId);
+      localStorage.setItem("userId", res.id);
       localStorage.setItem("role", res.role);
 
-      // 🔹 Fetch tokens from backend
-      const tokenRes = await api(`/tokens/${userId}`);
+      const tokenRes = await api(`/tokens/${res.id}`);
       setTokens(tokenRes.tokens);
 
-      // 🔹 Redirect based on role
-      navigate(
-        res.role === "vendor" ? "/vendor" : "/influencer"
-      );
-    } catch (err) {
-      alert("Registration failed. Try again.");
+      navigate("/redirect");
+    } catch {
+      alert("Registration failed.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-black">
       <form
         onSubmit={handleRegister}
-        className="bg-white p-8 rounded-xl shadow w-96 space-y-4"
+        className="bg-gray-900 p-8 rounded-xl shadow-xl w-96 space-y-4 border border-gray-800"
       >
-        <h1 className="text-2xl font-bold text-center">Sign Up</h1>
+        <h1 className="text-2xl font-bold text-center text-white">
+          Create Account
+        </h1>
 
         <input
           type="email"
           placeholder="Email"
-          className="w-full border p-3 rounded"
+          className="w-full bg-gray-800 border border-gray-700 text-white p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
 
-        {/* Role selection */}
         <select
           value={role}
           onChange={(e) => setRole(e.target.value)}
-          className="w-full border p-3 rounded"
+          className="w-full bg-gray-800 border border-gray-700 text-white p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
         >
           <option value="influencer">Influencer</option>
           <option value="vendor">Vendor</option>
@@ -72,19 +63,19 @@ export default function Register({ setTokens }) {
 
         <button
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-3 rounded disabled:opacity-60"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded transition disabled:opacity-60"
         >
           {loading ? "Creating account..." : "Create Account"}
         </button>
 
-        <p className="text-sm text-center">
+        <p className="text-center text-gray-400 text-sm">
           Already have an account?{" "}
-          <span
-            className="text-blue-600 cursor-pointer"
-            onClick={() => navigate("/login")}
+          <Link
+            to="/login"
+            className="text-blue-500 hover:underline font-medium"
           >
             Login
-          </span>
+          </Link>
         </p>
       </form>
     </div>

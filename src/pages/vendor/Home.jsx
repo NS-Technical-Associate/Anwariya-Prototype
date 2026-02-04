@@ -22,91 +22,82 @@ export default function VendorHome() {
   }, [vendorId]);
 
   return (
-    <PageWrapper
-      title="My Campaigns"
-      subtitle="Create, monitor, and manage influencer collaborations"
-    >
-      {/* TOP BAR */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-        <div>
-          <h2 className="text-xl font-semibold">
-            Active Marketing Posts
-          </h2>
-          <p className="text-sm text-gray-500">
-            These campaigns are visible to influencers
+    <PageWrapper title="My Campaigns">
+      <div className="min-h-screen rounded-3xl p-8 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+
+        {/* HEADER */}
+        <div className="mb-10">
+          <h1 className="text-4xl font-extrabold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">
+            My Campaigns
+          </h1>
+          <p className="text-gray-400 mt-2">
+            Create, monitor, and manage influencer collaborations
           </p>
         </div>
 
-        <button
-          onClick={() => navigate("/vendor/create")}
-          className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg shadow"
-        >
-          + Create Campaign
-        </button>
-      </div>
+        
 
-      {/* CONTENT */}
-      {loading ? (
-        <div className="flex justify-center py-20 text-gray-500">
-          Loading campaigns...
-        </div>
-      ) : campaigns.length === 0 ? (
-        <div className="bg-white p-12 rounded-xl shadow text-center max-w-lg mx-auto">
-          <h3 className="text-lg font-semibold mb-2">
-            No campaigns yet
-          </h3>
-          <p className="text-gray-500 mb-6">
-            Start your first influencer marketing campaign to
-            reach creators.
-          </p>
-          <button
-            onClick={() => navigate("/vendor/create")}
-            className="bg-purple-600 text-white px-6 py-3 rounded"
-          >
-            Create Campaign
-          </button>
-        </div>
-      ) : (
-        <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
-          {campaigns.map((campaign) => (
-            <div
-              key={campaign.id}
-              className="bg-white rounded-xl shadow hover:shadow-lg transition p-6 flex flex-col"
+        {/* CONTENT */}
+        {loading ? (
+          <div className="flex justify-center items-center py-24 text-lg text-gray-400">
+            Loading campaigns...
+          </div>
+        ) : campaigns.length === 0 ? (
+          <div className="bg-slate-800 border border-slate-700 p-12 rounded-2xl text-center max-w-lg mx-auto">
+            <h3 className="text-xl font-semibold text-white mb-2">
+              No campaigns yet
+            </h3>
+            <p className="text-gray-400 mb-6">
+              Start your first influencer marketing campaign to reach creators.
+            </p>
+            <button
+              onClick={() => navigate("/vendor/create")}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl transition"
             >
-              {/* CARD HEADER */}
-              <div className="mb-3">
-                <h3 className="font-semibold text-lg">
-                  {campaign.product_name}
-                </h3>
-                <span className="inline-block mt-1 text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
-                  Active
-                </span>
+              Create Campaign
+            </button>
+          </div>
+        ) : (
+          <div className="grid gap-8 sm:grid-cols-2 xl:grid-cols-3">
+            {campaigns.map((campaign) => (
+              <div
+                key={campaign.id}
+                className="group rounded-2xl overflow-hidden border border-slate-700 bg-slate-800 hover:border-blue-500 transition-all duration-300 shadow-lg hover:shadow-blue-500/20"
+              >
+                {/* CARD HEADER */}
+                <div className="p-5 bg-gradient-to-r from-blue-600 to-indigo-600">
+                  <h3 className="text-xl font-bold text-white">
+                    {campaign.product_name}
+                  </h3>
+                  <p className="text-xs text-blue-100 mt-1">
+                    Campaign #{campaign.id}
+                  </p>
+                </div>
+
+                {/* CARD BODY */}
+                <div className="p-6 flex flex-col gap-4">
+                  <p className="text-gray-300 text-sm leading-relaxed">
+                    {campaign.description}
+                  </p>
+
+                  <span className="w-fit text-xs font-semibold bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full">
+                    Active
+                  </span>
+
+                  <button
+                    onClick={() =>
+                      navigate(`/vendor/chat/${campaign.id}`)
+                    }
+                    className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition"
+                  >
+                    View Chats
+                  </button>
+                </div>
               </div>
-
-              {/* DESCRIPTION */}
-              <p className="text-sm text-gray-600 flex-1">
-                {campaign.description}
-              </p>
-
-              {/* FOOTER */}
-              <div className="mt-4 pt-4 border-t flex items-center justify-between text-sm">
-                <span className="text-gray-500">
-                  Campaign #{campaign.id}
-                </span>
-
-                <button
-                  onClick={() =>
-                    navigate(`/vendor/chat/${campaign.id}`)
-                  }
-                  className="text-purple-600 hover:underline"
-                >
-                  View Chats →
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </PageWrapper>
   );
 }
