@@ -22,10 +22,10 @@ export default function MyChats() {
 
         {/* HEADER */}
         <div className="max-w-4xl mx-auto mb-10">
-          <h1 className="text-3xl font-semibold tracking-wide text-blue-400">
+          <h1 className="text-3xl font-bold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">
             My Chats
           </h1>
-          <p className="text-slate-400 mt-1 text-sm">
+          <p className="text-slate-400 mt-2 text-sm tracking-wide">
             Your conversations with brands
           </p>
         </div>
@@ -37,8 +37,15 @@ export default function MyChats() {
               Loading chats...
             </div>
           ) : chats.length === 0 ? (
-            <div className="bg-slate-800 border border-slate-700 rounded-2xl p-12 text-center">
-              <h2 className="text-lg font-medium text-white">
+            <div className="
+              bg-slate-800
+              border border-blue-500/30
+              rounded-2xl
+              p-12
+              text-center
+              shadow-[0_0_30px_rgba(59,130,246,0.25)]
+            ">
+              <h2 className="text-lg font-semibold text-white tracking-wide">
                 No chats yet
               </h2>
               <p className="text-slate-400 mt-2">
@@ -46,7 +53,7 @@ export default function MyChats() {
               </p>
             </div>
           ) : (
-            <div className="space-y-5">
+            <div className="space-y-6">
               {chats.map((chat, index) => (
                 <div
                   key={chat.id}
@@ -54,31 +61,41 @@ export default function MyChats() {
                     navigate(`/influencer/chat/${chat.id}`)
                   }
                   className="
+                    relative
                     bg-slate-800
-                    border border-slate-700
+                    border border-blue-500/30
                     rounded-2xl
                     p-6
                     cursor-pointer
+
+                    shadow-[0_0_28px_rgba(59,130,246,0.35)]
                     transition-all duration-500
+
                     hover:-translate-y-1
-                    hover:bg-slate-700
-                    hover:border-blue-500/40
-                    hover:shadow-xl hover:shadow-blue-500/15
-                    animate-fadeIn
+                    hover:border-blue-400
+                    hover:shadow-[0_0_45px_rgba(59,130,246,0.55)]
                   "
                   style={{ animationDelay: `${index * 80}ms` }}
                 >
-                  <div className="flex items-center justify-between">
+                  {/* PERMANENT BLUE AURA */}
+                  <div className="
+                    absolute inset-0
+                    rounded-2xl
+                    bg-gradient-to-br from-blue-500/10 to-indigo-500/10
+                    pointer-events-none
+                  "></div>
+
+                  <div className="relative flex items-center justify-between">
                     <div>
-                      <p className="text-white font-medium tracking-wide">
+                      <p className="text-white font-semibold tracking-wide text-lg">
                         Campaign #{chat.campaign_id}
                       </p>
-                      <p className="text-sm text-slate-300 mt-1">
+                      <p className="text-sm text-slate-300 mt-1 tracking-wide">
                         Click to open conversation
                       </p>
                     </div>
 
-                    <span className="text-blue-400 text-sm font-medium">
+                    <span className="text-blue-400 text-sm font-semibold tracking-wide">
                       Open →
                     </span>
                   </div>

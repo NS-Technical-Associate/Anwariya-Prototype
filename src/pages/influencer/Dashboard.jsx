@@ -15,13 +15,11 @@ export default function InfluencerDashboard() {
   }, []);
 
   return (
-    <PageWrapper
-      
-    >
+    <PageWrapper>
       {/* THEME WRAPPER */}
       <div className="min-h-screen rounded-3xl p-8 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
 
-        {/* CUSTOM STYLED HEADER */}
+        {/* HEADER */}
         <div className="mb-10">
           <h1 className="text-4xl font-extrabold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">
             Available Campaigns
@@ -49,10 +47,29 @@ export default function InfluencerDashboard() {
             {campaigns.map((campaign) => (
               <div
                 key={campaign.id}
-                className="group rounded-2xl overflow-hidden border border-slate-700 bg-slate-800 hover:border-indigo-500 transition-all duration-300 shadow-lg hover:shadow-indigo-500/20"
+                className="
+                  group
+                  relative
+                  rounded-2xl
+                  overflow-hidden
+                  border border-blue-500/40
+                  bg-slate-800
+                  transition-all duration-300
+                  shadow-[0_0_28px_rgba(59,130,246,0.35)]
+
+                  hover:border-blue-400
+                  hover:shadow-[0_0_48px_rgba(59,130,246,0.55)]
+                "
               >
+                {/* PERMANENT BLUE AURA */}
+                <div className="
+                  absolute inset-0
+                  bg-gradient-to-br from-blue-500/10 to-indigo-500/10
+                  pointer-events-none
+                "></div>
+
                 {/* CARD HEADER */}
-                <div className="p-5 bg-gradient-to-r from-indigo-600 to-blue-600">
+                <div className="relative p-5 bg-gradient-to-r from-indigo-600 to-blue-600">
                   <h3 className="text-xl font-bold text-white">
                     {campaign.product_name}
                   </h3>
@@ -62,7 +79,7 @@ export default function InfluencerDashboard() {
                 </div>
 
                 {/* CARD BODY */}
-                <div className="p-6 flex flex-col gap-4">
+                <div className="relative p-6 flex flex-col gap-4">
                   <p className="text-gray-300 text-sm leading-relaxed">
                     {campaign.description}
                   </p>
@@ -88,4 +105,3 @@ export default function InfluencerDashboard() {
     </PageWrapper>
   );
 }
-

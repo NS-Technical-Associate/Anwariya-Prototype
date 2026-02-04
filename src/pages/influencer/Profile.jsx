@@ -67,11 +67,23 @@ export default function InfluencerProfile() {
     <PageWrapper>
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 px-6 py-14">
 
-        <div className="max-w-4xl mx-auto bg-slate-900/90 backdrop-blur border border-slate-800 rounded-3xl p-10 shadow-2xl shadow-blue-500/20 animate-fadeIn">
+        {/* MAIN PROFILE CONTAINER – ALWAYS GLOWING */}
+        <div className="
+          max-w-4xl mx-auto
+          bg-slate-900/95
+          backdrop-blur
+          border border-blue-500/40
+          rounded-3xl
+          p-10
+          shadow-[0_0_45px_rgba(59,130,246,0.45)]
+          transition-all duration-500
+          hover:shadow-[0_0_70px_rgba(59,130,246,0.7)]
+          animate-fadeIn
+        ">
 
           {/* HEADER */}
-          <div className="mb-10 border-b border-slate-800 pb-6">
-            <h1 className="text-3xl font-semibold text-blue-400">
+          <div className="mb-10 border-b border-blue-500/30 pb-6">
+            <h1 className="text-3xl font-semibold text-blue-400 drop-shadow-[0_0_10px_rgba(96,165,250,0.7)]">
               My Profile
             </h1>
             <p className="text-slate-400 text-sm mt-1">
@@ -83,7 +95,16 @@ export default function InfluencerProfile() {
             /* ================= VIEW MODE ================= */
             <div className="space-y-10">
 
-              <section className="bg-slate-800/70 rounded-2xl p-6 border border-slate-700">
+              {/* NAME SECTION */}
+              <section className="
+                bg-slate-800/80
+                rounded-2xl
+                p-6
+                border border-blue-500/30
+                shadow-[0_0_25px_rgba(59,130,246,0.35)]
+                transition-all duration-300
+                hover:shadow-[0_0_45px_rgba(59,130,246,0.6)]
+              ">
                 <h2 className="text-2xl font-bold text-white">
                   {profile.name}
                 </h2>
@@ -92,6 +113,7 @@ export default function InfluencerProfile() {
                 </p>
               </section>
 
+              {/* STATS */}
               <section className="grid sm:grid-cols-2 gap-6">
                 {[
                   ["Followers", profile.followers_range],
@@ -99,7 +121,15 @@ export default function InfluencerProfile() {
                 ].map(([label, value]) => (
                   <div
                     key={label}
-                    className="bg-slate-800/70 rounded-2xl p-5 border border-slate-700"
+                    className="
+                      bg-slate-800/80
+                      rounded-2xl
+                      p-5
+                      border border-blue-500/30
+                      shadow-[0_0_22px_rgba(59,130,246,0.35)]
+                      transition-all duration-300
+                      hover:shadow-[0_0_40px_rgba(59,130,246,0.6)]
+                    "
                   >
                     <p className="text-xs text-slate-400 uppercase">
                       {label}
@@ -111,7 +141,16 @@ export default function InfluencerProfile() {
                 ))}
               </section>
 
-              <section className="bg-slate-800/70 rounded-2xl p-6 border border-slate-700">
+              {/* CONTENT TYPES */}
+              <section className="
+                bg-slate-800/80
+                rounded-2xl
+                p-6
+                border border-blue-500/30
+                shadow-[0_0_25px_rgba(59,130,246,0.35)]
+                transition-all duration-300
+                hover:shadow-[0_0_45px_rgba(59,130,246,0.6)]
+              ">
                 <p className="text-slate-300 font-medium mb-3">
                   Content Types
                 </p>
@@ -119,7 +158,7 @@ export default function InfluencerProfile() {
                   {profile.content_types.map((type) => (
                     <span
                       key={type}
-                      className="px-4 py-1.5 rounded-full text-sm bg-blue-600/20 text-blue-300 border border-blue-500/30"
+                      className="px-4 py-1.5 rounded-full text-sm bg-blue-600/30 text-blue-300 border border-blue-500/40 shadow-md"
                     >
                       {type}
                     </span>
@@ -127,7 +166,16 @@ export default function InfluencerProfile() {
                 </div>
               </section>
 
-              <section className="bg-slate-800/70 rounded-2xl p-6 border border-slate-700">
+              {/* ABOUT */}
+              <section className="
+                bg-slate-800/80
+                rounded-2xl
+                p-6
+                border border-blue-500/30
+                shadow-[0_0_25px_rgba(59,130,246,0.35)]
+                transition-all duration-300
+                hover:shadow-[0_0_45px_rgba(59,130,246,0.6)]
+              ">
                 <p className="text-slate-300 font-medium mb-2">
                   About
                 </p>
@@ -136,7 +184,16 @@ export default function InfluencerProfile() {
                 </p>
               </section>
 
-              <section className="bg-green-600/10 border border-green-500/30 rounded-2xl p-4 text-green-300 text-sm">
+              {/* STATUS */}
+              <section className="
+                bg-green-600/10
+                border border-green-500/40
+                rounded-2xl
+                p-4
+                text-green-300
+                text-sm
+                shadow-[0_0_18px_rgba(34,197,94,0.4)]
+              ">
                 Status: {profile.availability}
               </section>
 
@@ -151,10 +208,15 @@ export default function InfluencerProfile() {
             /* ================= EDIT MODE ================= */
             <div className="space-y-8">
 
-              {/* FORM CARD */}
-              <section className="bg-slate-800/70 rounded-2xl p-6 border border-slate-700 space-y-6">
-
-                {/* INPUT */}
+              {/* FORM */}
+              <section className="
+                bg-slate-800/80
+                rounded-2xl
+                p-6
+                border border-blue-500/30
+                shadow-[0_0_25px_rgba(59,130,246,0.35)]
+                space-y-6
+              ">
                 <div>
                   <label className="text-slate-300 text-sm mb-1 block">
                     Display Name
@@ -165,23 +227,20 @@ export default function InfluencerProfile() {
                     className="
                       w-full
                       bg-slate-900
-                      border border-slate-600
+                      border border-blue-500/40
                       p-3
                       rounded-xl
                       text-slate-200
-                      transition
-                      focus:border-blue-500
-                      focus:ring-2 focus:ring-blue-500/40
+                      shadow-[0_0_15px_rgba(59,130,246,0.35)]
+                      focus:ring-2 focus:ring-blue-500/60
                       outline-none
                     "
                   />
                 </div>
 
-                {/* SELECTS */}
-                {[
-                  ["Primary Niche", "niche", ["Lifestyle","Fashion","Fitness","Tech","Beauty"]],
-                  ["Followers Range", "followers_range", ["1k–10k","10k–50k","50k–100k","100k+"]],
-                  ["Engagement Level", "engagement", ["High","Medium","Low"]],
+                {[["Primary Niche","niche",["Lifestyle","Fashion","Fitness","Tech","Beauty"]],
+                  ["Followers Range","followers_range",["1k–10k","10k–50k","50k–100k","100k+"]],
+                  ["Engagement Level","engagement",["High","Medium","Low"]]
                 ].map(([label, field, options]) => (
                   <div key={field}>
                     <label className="text-slate-300 text-sm mb-1 block">
@@ -193,13 +252,12 @@ export default function InfluencerProfile() {
                       className="
                         w-full
                         bg-slate-900
-                        border border-slate-600
+                        border border-blue-500/40
                         p-3
                         rounded-xl
                         text-slate-200
-                        transition
-                        focus:border-blue-500
-                        focus:ring-2 focus:ring-blue-500/40
+                        shadow-[0_0_15px_rgba(59,130,246,0.35)]
+                        focus:ring-2 focus:ring-blue-500/60
                         outline-none
                       "
                     >
@@ -212,21 +270,26 @@ export default function InfluencerProfile() {
                 ))}
               </section>
 
-              {/* CONTENT TYPES */}
-              <section className="bg-slate-800/70 rounded-2xl p-6 border border-slate-700">
+              {/* CONTENT TYPES EDIT */}
+              <section className="
+                bg-slate-800/80
+                rounded-2xl
+                p-6
+                border border-blue-500/30
+                shadow-[0_0_25px_rgba(59,130,246,0.35)]
+              ">
                 <p className="text-slate-300 mb-3">Content Types</p>
                 <div className="flex flex-wrap gap-3">
-                  {["Reels", "Shorts", "Posts", "Stories"].map((type) => (
+                  {["Reels","Shorts","Posts","Stories"].map((type) => (
                     <button
                       key={type}
                       type="button"
                       onClick={() => toggleContentType(type)}
-                      className={`
-                        px-4 py-2 rounded-xl border transition
+                      className={`px-4 py-2 rounded-xl border transition
                         ${
                           profile.content_types.includes(type)
-                            ? "bg-blue-600 text-white border-blue-500 shadow-md shadow-blue-500/30"
-                            : "bg-slate-900 text-slate-300 border-slate-600 hover:bg-slate-800"
+                            ? "bg-blue-600 text-white border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.6)]"
+                            : "bg-slate-900 text-slate-300 border-slate-600 hover:border-blue-400"
                         }
                       `}
                     >
@@ -237,7 +300,13 @@ export default function InfluencerProfile() {
               </section>
 
               {/* BIO */}
-              <section className="bg-slate-800/70 rounded-2xl p-6 border border-slate-700">
+              <section className="
+                bg-slate-800/80
+                rounded-2xl
+                p-6
+                border border-blue-500/30
+                shadow-[0_0_25px_rgba(59,130,246,0.35)]
+              ">
                 <label className="text-slate-300 text-sm mb-1 block">
                   Short Bio
                 </label>
@@ -248,13 +317,12 @@ export default function InfluencerProfile() {
                   className="
                     w-full
                     bg-slate-900
-                    border border-slate-600
+                    border border-blue-500/40
                     p-3
                     rounded-xl
                     text-slate-200
-                    transition
-                    focus:border-blue-500
-                    focus:ring-2 focus:ring-blue-500/40
+                    shadow-[0_0_15px_rgba(59,130,246,0.35)]
+                    focus:ring-2 focus:ring-blue-500/60
                     outline-none
                   "
                 />
@@ -263,7 +331,7 @@ export default function InfluencerProfile() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="bg-blue-600 hover:bg-blue-700 transition text-white px-8 py-3 rounded-xl font-medium shadow-lg shadow-blue-500/40 disabled:opacity-60"
+                className="bg-blue-600 hover:bg-blue-700 transition text-white px-8 py-3 rounded-xl font-medium shadow-[0_0_30px_rgba(59,130,246,0.6)] disabled:opacity-60"
               >
                 {saving ? "Saving..." : "Save Profile"}
               </button>
