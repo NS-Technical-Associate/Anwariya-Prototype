@@ -12,6 +12,8 @@ export default function Chat({ tokens, setTokens }) {
   const [sending, setSending] = useState(false);
 
   const bottomRef = useRef(null);
+  const autoSentRef = useRef(false); // 🔒 prevents double auto message
+
   const userId = Number(localStorage.getItem("userId"));
 
   const FREE_LIMIT = 5;
@@ -27,7 +29,13 @@ export default function Chat({ tokens, setTokens }) {
     const loadMessages = async () => {
       const data = await api(`/messages/${id}`);
 
-      if (data.length === 0 && !localStorage.getItem(autoMsgKey)) {
+      if (
+        data.length === 0 &&
+        !localStorage.getItem(autoMsgKey) &&
+        !autoSentRef.current
+      ) {
+        autoSentRef.current = true;
+
         await api("/messages", {
           method: "POST",
           body: JSON.stringify({
@@ -121,16 +129,7 @@ export default function Chat({ tokens, setTokens }) {
             </p>
           </div>
 
-          {/* LIGHTER BLUE TOKENS BADGE */}
-          <div className="
-            bg-blue-500/80
-            text-white
-            px-4 py-1.5
-            rounded-full
-            font-semibold
-            border border-blue-300
-            shadow-[0_0_18px_rgba(96,165,250,0.6)]
-          ">
+          <div className="bg-blue-500/80 text-white px-4 py-1.5 rounded-full font-semibold border border-blue-300 shadow-[0_0_18px_rgba(96,165,250,0.6)]">
             {tokens} Tokens
           </div>
         </div>
@@ -140,13 +139,12 @@ export default function Chat({ tokens, setTokens }) {
           {messages.map((m) => (
             <div
               key={m.id}
-              className={`max-w-sm px-4 py-2 rounded-2xl text-sm transition-all
+              className={`max-w-sm px-4 py-2 rounded-2xl text-sm
                 ${
                   m.sender_id === userId
-                    ? "ml-auto bg-blue-500 text-white shadow-[0_0_20px_rgba(96,165,250,0.5)]"
-                    : "mr-auto bg-slate-800 text-slate-200 border border-slate-700"
-                }
-              `}
+                    ? "ml-auto bg-blue-500 text-white"
+                    : "mr-auto bg-slate-800 text-slate-200"
+                }`}
             >
               {m.text}
             </div>
@@ -160,36 +158,12 @@ export default function Chat({ tokens, setTokens }) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message..."
-            className="
-              flex-1
-              bg-slate-900
-              border border-blue-500/40
-              rounded-xl
-              px-4 py-2
-              text-slate-200
-
-              shadow-[0_0_18px_rgba(96,165,250,0.35)]
-              transition-all duration-300
-
-              focus:outline-none
-              focus:ring-2 focus:ring-blue-400/70
-              hover:shadow-[0_0_26px_rgba(96,165,250,0.6)]
-            "
+            className="flex-1 bg-slate-900 border border-blue-500/40 rounded-xl px-4 py-2 text-slate-200 focus:outline-none"
           />
-
           <button
             onClick={handleSend}
             disabled={sending}
-            className="
-              bg-blue-500 hover:bg-blue-600
-              text-white
-              px-6
-              rounded-xl
-              transition
-              active:scale-95
-              disabled:opacity-60
-              shadow-[0_0_20px_rgba(96,165,250,0.6)]
-            "
+            className="bg-blue-500 hover:bg-blue-600 text-white px-6 rounded-xl"
           >
             Send
           </button>

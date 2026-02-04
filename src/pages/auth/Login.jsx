@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { api } from "../../services/api";
 
 export default function Login({ setTokens }) {
@@ -14,26 +14,19 @@ export default function Login({ setTokens }) {
     setLoading(true);
 
     try {
-      // 🔹 Prototype login = create or reuse user
       const res = await api("/users", {
         method: "POST",
         body: JSON.stringify({ email, role }),
       });
 
-      // 🔹 Save session
-      const userId = res.id;
-      localStorage.setItem("userId", userId);
+      localStorage.setItem("userId", res.id);
       localStorage.setItem("role", res.role);
 
-      // 🔹 Fetch tokens from backend
-      const tokenRes = await api(`/tokens/${userId}`);
+      const tokenRes = await api(`/tokens/${res.id}`);
       setTokens(tokenRes.tokens);
 
-      // 🔹 Redirect based on role
-      navigate(
-        res.role === "vendor" ? "/vendor/home" : "/influencer"
-      );
-    } catch (err) {
+      navigate("/redirect");
+    } catch {
       alert("Login failed. Try again.");
     } finally {
       setLoading(false);
@@ -41,25 +34,26 @@ export default function Login({ setTokens }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-black">
       <form
         onSubmit={handleLogin}
-        className="bg-white p-8 rounded-xl shadow w-96 space-y-4"
+        className="bg-gray-900 p-8 rounded-xl shadow-xl w-96 space-y-4 border border-gray-800"
       >
-        <h1 className="text-2xl font-bold text-center">Login</h1>
+        <h1 className="text-2xl font-bold text-center text-white">
+          Login
+        </h1>
 
         <input
           type="email"
           placeholder="Email"
-          className="w-full border p-3 rounded"
+          className="w-full bg-gray-800 border border-gray-700 text-white p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
 
-        {/* Prototype role selection */}
         <select
-          className="w-full border p-3 rounded"
+          className="w-full bg-gray-800 border border-gray-700 text-white p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
           value={role}
           onChange={(e) => setRole(e.target.value)}
         >
@@ -69,19 +63,19 @@ export default function Login({ setTokens }) {
 
         <button
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-3 rounded disabled:opacity-60"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded transition disabled:opacity-60"
         >
           {loading ? "Logging in..." : "Login"}
         </button>
 
-        <p className="text-sm text-center">
-          Don’t have an account?{" "}
-          <span
-            className="text-blue-600 cursor-pointer"
-            onClick={() => navigate("/register")}
+        <p className="text-center text-gray-400 text-sm">
+          New here?{" "}
+          <Link
+            to="/register"
+            className="text-blue-500 hover:underline font-medium"
           >
-            Sign up
-          </span>
+            Create an account
+          </Link>
         </p>
       </form>
     </div>

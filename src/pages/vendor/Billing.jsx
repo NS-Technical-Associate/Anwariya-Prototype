@@ -35,65 +35,144 @@ export default function Billing() {
   };
 
   return (
-    <PageWrapper title="Generate Bill">
-      <div className="bg-white p-6 rounded-xl shadow max-w-xl space-y-4">
-        <select
-          className="border p-2 w-full rounded"
-          onChange={(e) =>
-            setBill({ ...bill, productId: e.target.value })
-          }
+    <PageWrapper>
+      <div className="min-h-screen bg-slate-950 px-6 py-14 flex justify-center">
+
+        {/* CARD */}
+        <div
+          className="
+            w-full max-w-xl
+            bg-slate-900
+            border border-slate-800
+            rounded-3xl
+            p-8 space-y-6
+            shadow-xl shadow-blue-500/10
+            ring-1 ring-blue-500/20
+            animate-fadeIn
+          "
         >
-          <option>Select product</option>
-          {products.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.product_name} (Stock: {p.quantity_available})
-            </option>
-          ))}
-        </select>
-
-        <input
-          type="number"
-          placeholder="Quantity sold"
-          className="border p-2 w-full rounded"
-          onChange={(e) =>
-            setBill({ ...bill, qty: e.target.value })
-          }
-        />
-
-        <input
-          type="number"
-          placeholder="Selling price per unit"
-          className="border p-2 w-full rounded"
-          onChange={(e) =>
-            setBill({ ...bill, price: e.target.value })
-          }
-        />
-
-        {selected && bill.qty && bill.price && (
-          <div className="bg-gray-50 p-3 rounded text-sm">
-            <p>Total: ₹{bill.qty * bill.price}</p>
-            <p>
-              Profit: ₹
-              {(bill.price - selected.cost_price) *
-                bill.qty}
+          {/* HEADER */}
+          <div className="border-b border-slate-800 pb-4">
+            <h1 className="text-2xl font-semibold text-blue-400">
+              Generate Bill
+            </h1>
+            <p className="text-slate-400 text-sm mt-1">
+              Create a billing summary for sold products
             </p>
           </div>
-        )}
 
-        <button
-          onClick={handleGenerate}
-          className="bg-purple-600 text-white py-2 rounded w-full"
-        >
-          Generate Bill
-        </button>
+          {/* PRODUCT SELECT */}
+          <select
+            className="
+              w-full
+              bg-slate-900
+              border border-slate-700
+              p-3
+              rounded-xl
+              text-slate-200
+              focus:outline-none
+              focus:ring-2 focus:ring-blue-500/40
+            "
+            onChange={(e) =>
+              setBill({ ...bill, productId: e.target.value })
+            }
+          >
+            <option value="">Select product</option>
+            {products.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.product_name} (Stock: {p.quantity_available})
+              </option>
+            ))}
+          </select>
 
-        {summary && (
-          <div className="bg-green-50 p-4 rounded text-sm">
-            <p className="font-medium">Bill Generated</p>
-            <p>Total: ₹{summary.total}</p>
-            <p>Profit: ₹{summary.profit}</p>
-          </div>
-        )}
+          {/* QUANTITY */}
+          <input
+            type="number"
+            placeholder="Quantity sold"
+            className="
+              w-full
+              bg-slate-900
+              border border-slate-700
+              p-3
+              rounded-xl
+              text-slate-200
+              focus:outline-none
+              focus:ring-2 focus:ring-blue-500/40
+            "
+            onChange={(e) =>
+              setBill({ ...bill, qty: e.target.value })
+            }
+          />
+
+          {/* PRICE */}
+          <input
+            type="number"
+            placeholder="Selling price per unit"
+            className="
+              w-full
+              bg-slate-900
+              border border-slate-700
+              p-3
+              rounded-xl
+              text-slate-200
+              focus:outline-none
+              focus:ring-2 focus:ring-blue-500/40
+            "
+            onChange={(e) =>
+              setBill({ ...bill, price: e.target.value })
+            }
+          />
+
+          {/* CALCULATION PREVIEW */}
+          {selected && bill.qty && bill.price && (
+            <div className="bg-slate-800/70 border border-slate-700 rounded-2xl p-4 text-sm space-y-1">
+              <p className="text-slate-300">
+                Total:{" "}
+                <span className="text-white font-medium">
+                  ₹{bill.qty * bill.price}
+                </span>
+              </p>
+              <p className="text-slate-300">
+                Profit:{" "}
+                <span className="text-green-400 font-medium">
+                  ₹{(bill.price - selected.cost_price) * bill.qty}
+                </span>
+              </p>
+            </div>
+          )}
+
+          {/* BUTTON */}
+          <button
+            onClick={handleGenerate}
+            className="
+              w-full
+              bg-blue-600 hover:bg-blue-700
+              text-white
+              py-3
+              rounded-xl
+              font-medium
+              transition
+              active:scale-95
+            "
+          >
+            Generate Bill
+          </button>
+
+          {/* RESULT */}
+          {summary && (
+            <div className="bg-green-600/10 border border-green-500/30 rounded-2xl p-4 text-sm">
+              <p className="font-medium text-green-300">
+                ✔ Bill Generated
+              </p>
+              <p className="text-slate-300 mt-1">
+                Total: ₹{summary.total}
+              </p>
+              <p className="text-slate-300">
+                Profit: ₹{summary.profit}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </PageWrapper>
   );
