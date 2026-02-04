@@ -24,7 +24,7 @@ dist-ssr
 *.sw?
 
 # ignoring __pycache__ and .pytest_cache directories
-./backend/__pycache__
+./backend/__pycache__/
 ./backend/.pytest_cache/
 ./backend/venv
 Venv
