@@ -1,20 +1,39 @@
+import json
+import os
+from fastapi import HTTPException
+from pathlib import Path
+from dotenv import load_dotenv
+import google.generativeai as genai
 from sqlalchemy.orm import Session
-from sqlalchemy import text
-from schemas import BillCreate
+import models
 
 # --------------------
 # USERS
 # --------------------
 
+BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(BASE_DIR / ".env")
+
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
+
 def create_or_get_user(db: Session, email: str, role: str):
     user = db.query(models.User).filter(models.User.email == email).first()
+
     if user:
+        if user.role != role:
+            raise HTTPException(
+                status_code=403,
+                detail=f"User is registered as {user.role}, not {role}"
+            )
         return user
+
     user = models.User(email=email, role=role)
     db.add(user)
     db.commit()
     db.refresh(user)
     return user
+
 
 def get_user_tokens(db: Session, user_id: int):
     user = db.query(models.User).filter(models.User.id == user_id).first()
@@ -231,3 +250,58 @@ def create_bill(db: Session, bill):
     db.refresh(new_bill)
 
     return new_bill
+
+def build_marketing_prompt(analytics: dict) -> str:
+    return f"""
+You are a senior performance marketing strategist.
+
+Rules:
+- Use ONLY the provided data
+- Do NOT invent numbers
+- Do NOT give generic advice
+- Base every suggestion on actual sales data
+- If data is insufficient, clearly say so
+
+Analytics data (JSON):
+{json.dumps(analytics, indent=2)}
+
+Return STRICT JSON only in this format:
+
+{{
+  "key_insights": [],
+  "problems": [],
+  "recommended_actions": [
+    {{
+      "priority": "HIGH | MEDIUM | LOW",
+      "action": "",
+      "reason": "",
+      "metric_to_track": ""
+    }}
+  ],
+  "budget_advice": ""
+}}
+"""
+
+def generate_marketing_insights(ai_analytics: dict) -> str:
+    if not os.getenv("GEMINI_API_KEY"):
+        raise HTTPException(status_code=500, detail="Gemini API key not configured")
+
+    model = genai.GenerativeModel("gemini-1.5-pro")
+
+    response = model.generate_content(
+        build_marketing_prompt(ai_analytics),
+        generation_config={
+            "temperature": 0.4
+        }
+    )
+
+    return response.text
+
+def safe_parse_ai_response(text: str):
+    try:
+        return json.loads(text)
+    except Exception:
+        return {
+            "error": "Invalid AI response",
+            "raw_response": text
+        }
